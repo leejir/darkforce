@@ -8,6 +8,8 @@
 
 #include <boost/make_shared.hpp>
 
+#include <uuid/uuid.h>
+
 #include <config/config.h>
 
 namespace Fossilizid{
@@ -17,6 +19,10 @@ center::center(std::string filename, std::string key){
 	isrun = true;
 
 	boost::shared_ptr<config::config> _config = boost::make_shared<config::config>(filename);
+	if (_config == nullptr){
+		throw std::exception(("cannot find config file" + filename).c_str());
+	}
+
 
 	auto center_config = _config->get_value_dict("center");
 	if (center_config == 0){
@@ -38,8 +44,8 @@ center::center(std::string filename, std::string key){
 
 	_svrsessioncontainer = boost::make_shared<achieve::sessioncontainer>(_channelservice, _process);
 
-	auto center_config = _config->get_value_dict("key");
-	if (center_config == 0){
+	auto key_config = _config->get_value_dict("key");
+	if (key_config == 0){
 		throw std::exception("cannot find this config");
 	} else{
 		auto set = boost::make_shared<std::vector<std::pair<std::string, short> > >();
@@ -50,7 +56,7 @@ center::center(std::string filename, std::string key){
 			auto port = (short)e->get_value_int("port");
 			set->push_back(std::make_pair(ip, port));
 		}
-		_writeacceptor = boost::make_shared<acceptor::writeacceptor>(center_config->get_value_string("ip"), center_config->get_value_int("port"), set, _channelservice, _svrsessioncontainer);
+		_writeacceptor = boost::make_shared<acceptor::writeacceptor>(key_config->get_value_string("ip"), key_config->get_value_int("port"), set, _channelservice, _svrsessioncontainer);
 	}
 	_timerservice = timer::timerservice::createinstance();
 
@@ -106,32 +112,61 @@ void center::svr_disconn(boost::shared_ptr<juggle::channel> ch){
 	}
 }
 
-int center::register_logic(boost::shared_ptr<Fossilizid::juggle::channel> ch, std::string ip, int port){
-	logicaddrmap.insert(std::make_pair(ch, std::make_pair(ip, port)));
-	logicmap.insert(std::make_pair(ch, boost::make_shared<sync::logic>(_process, ch)));
+int center::register_logic(std::string ip, int port){
+	auto ch = _service->get_current_channel();
+
+	logicaddrmap.insert(std::make_pair(ch, std::make_pair(++servernum, std::make_pair(ip, port))));
+	auto caller = boost::make_shared<sync::logic>(_process, ch);
+	logicmap.insert(std::make_pair(ch, caller));
+
+	for (auto cgate : gateaddrmap){
+		caller->register_gate(cgate.second.first, cgate.second.second.first, cgate.second.second.second);
+	}
+
+	for (auto cgate : dbaddrmap){
+		caller->register_gate(cgate.second.first, cgate.second.second.first, cgate.second.second.second);
+	}
 
 	return ++servernum;
 }
 
-int center::register_gate(boost::shared_ptr<Fossilizid::juggle::channel> ch, std::string ip, int port){
-	gateaddrmap.insert(std::make_pair(ch, std::make_pair(ip, port)));
+int center::register_gate(std::string ip, int port){
+	auto ch = _service->get_current_channel();
+
+	int gatenum = ++servernum;
+
+	gateaddrmap.insert(std::make_pair(ch, std::make_pair(gatenum, std::make_pair(ip, port))));
 	gatemap.insert(std::make_pair(ch, boost::make_shared<sync::gate>(_process, ch)));
 
-	return ++servernum;
+	for (auto caller : logicmap){
+		caller.second->register_db(gatenum, ip, port);
+	}
+
+	return gatenum;
 }
 
-int center::register_routing(boost::shared_ptr<Fossilizid::juggle::channel> ch, std::string ip, int port){
-	routingaddrmap.insert(std::make_pair(ch, std::make_pair(ip, port)));
+int center::register_routing(std::string ip, int port){
+	auto ch = _service->get_current_channel();
+
+	routingaddrmap.insert(std::make_pair(ch, std::make_pair(++servernum, std::make_pair(ip, port))));
 	routingmap.insert(std::make_pair(ch, boost::make_shared<sync::routing>(_process, ch)));
 
-	return ++servernum;
+	return servernum;
 }
 
-int center::register_db(boost::shared_ptr<Fossilizid::juggle::channel> ch, std::string ip, int port){
-	dbaddrmap.insert(std::make_pair(ch, std::make_pair(ip, port)));
+int center::register_db(std::string ip, int port){
+	auto ch = _service->get_current_channel();
+
+	int dbnum = ++servernum;
+
+	dbaddrmap.insert(std::make_pair(ch, std::make_pair(dbnum, std::make_pair(ip, port))));
 	dbmap.insert(std::make_pair(ch, boost::make_shared<sync::dbproxy>(_process, ch)));
 
-	return ++servernum;
+	for (auto caller : logicmap){
+		caller.second->register_db(dbnum, ip, port);
+	}
+
+	return dbnum;
 }
 
 } /* namespace routing */

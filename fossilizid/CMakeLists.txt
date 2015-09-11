@@ -19,11 +19,6 @@ set(Fossilizid_lib_path ${PROJECT_BINARY_DIR}/bin/Debug CACHE PATH "Fossilizid l
 link_directories(${Fossilizid_lib_path})
 MESSAGE(STATUS "This is lib dir " ${Fossilizid_lib_path}) 
 
-set(Fossilizid_bin_path ${PROJECT_BINARY_DIR}//bin CACHE PATH "Fossilizid bin path")
-
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-
 ADD_SUBDIRECTORY(pool ${Fossilizid_bin_path}/pool)
 ADD_SUBDIRECTORY(container ${Fossilizid_bin_path}/container)
 ADD_SUBDIRECTORY(context ${Fossilizid_bin_path}/context)

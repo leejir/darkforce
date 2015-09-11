@@ -31,6 +31,11 @@ public:
 	 */
 	virtual uint64_t unixtime() = 0;
 
+	/*
+	 * current channel 
+	 */
+	virtual boost::shared_ptr<channel> get_current_channel();
+
 };
 
 boost::shared_ptr<service> create_service();

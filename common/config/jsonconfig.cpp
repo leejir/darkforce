@@ -20,6 +20,10 @@ namespace config{
 
 config::config(std::string & file){
 	auto fs = std::ifstream(file);
+	if (!fs.is_open()){
+		throw std::exception(("cannot find config file" + file).c_str());
+	}
+
 	std::string buff;
 	fs >> buff;
 

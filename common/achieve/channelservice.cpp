@@ -118,6 +118,10 @@ void acceptor::handle_accept(remoteq::EVENT ev){
 	}
 }
 
+void acceptor::set_fitle(boost::shared_ptr<fitle::fitle<std::pair<std::string, short> > > _epfitle){
+	epfitle = _epfitle;
+}
+
 /*
  * connector
  */

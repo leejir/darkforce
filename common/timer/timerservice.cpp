@@ -13,7 +13,8 @@
 namespace Fossilizid{
 namespace timer{
 
-boost::shared_ptr<timerservice> _timerservice = 0;
+boost::shared_ptr<timerservice> Fossilizid::timer::_timerservice = nullptr;
+boost::shared_ptr<timerservice> Fossilizid::timer::timerservice::_timerservice = nullptr;
 
 void timerservice::releasetimerservice(timerservice * _ptimerservice){
 	_ptimerservice->~timerservice();
@@ -24,7 +25,7 @@ boost::shared_ptr<timerservice> timerservice::createinstance(){
 	timerservice * _ptimerservice = (timerservice *)pool::mempool::allocator(sizeof(timerservice));
 	new (_ptimerservice)timerservice();
 	timerservice::_timerservice = boost::shared_ptr<timerservice>(_ptimerservice, boost::bind(timerservice::releasetimerservice, _1));
-	_timerservice = timerservice::_timerservice;
+	Fossilizid::timer::_timerservice = timerservice::_timerservice;
 	return timerservice::_timerservice;
 }
 

@@ -67,11 +67,13 @@ private:
 
 	std::pair<std::string, short> center_addr;
 	boost::shared_ptr<juggle::channel> ch_center;
+	boost::shared_ptr<async::center> center_caller;
 	boost::shared_ptr<connector::connector> _centerconnector;
 	boost::shared_ptr<achieve::sessioncontainer> _centersessioncontainer;
 	       
 	std::vector< std::pair<std::pair<std::string, short>, boost::shared_ptr<juggle::channel> > > routing_server;
 	boost::unordered_map<boost::shared_ptr<juggle::channel>, boost::tuple<std::string, short, int> > routing_map;
+	boost::unordered_map<boost::shared_ptr<juggle::channel>, boost::shared_ptr<async::routing> > routing_caller;
 	boost::shared_ptr<connector::connector> _routingconnector;
 	boost::shared_ptr<achieve::sessioncontainer> _routingsessioncontainer;
 

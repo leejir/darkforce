@@ -121,6 +121,10 @@ void juggleservice::set_current_context(context::context _context){
 	*pcontext = _context;
 }
 
+void juggleservice::set_current_channel(boost::shared_ptr<channel> ch){
+	tss_current_channel.reset(ch.get());
+}
+
 void juggleservice::scheduler(){
 	context::context _context = get_current_context();
 
@@ -136,6 +140,11 @@ void juggleservice::scheduler(){
 	}else {
 		throw std::exception("_tsp_loop_main_context is null");
 	}
+}
+
+void juggleservice::add_process(boost::shared_ptr<process> _process){
+	boost::mutex::scoped_lock l(mu_process);
+	setprocess.insert(_process);
 }
 
 

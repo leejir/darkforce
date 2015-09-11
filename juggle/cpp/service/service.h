@@ -85,8 +85,17 @@ public:
 	 */
 	void add_process(boost::shared_ptr<process> _process);
 
+public:
+	/*
+	* set current channel
+	*/
+	void set_current_channel(boost::shared_ptr<channel> ch);
+
 private:
 	boost::thread_specific_ptr<context::context> tss_current_context;
+
+private:
+	boost::thread_specific_ptr<channel > tss_current_channel;
 
 private:
 	boost::mutex mu_wake_up_vector;

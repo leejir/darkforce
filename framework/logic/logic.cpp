@@ -131,6 +131,7 @@ void logic::run(){
 		{
 			if (ch_center == 0){
 				ch_center = _centerconnector->connect(center_addr.first.c_str(), center_addr.second);
+				center_caller = boost::make_shared<async::routing>(_process, ch_center);
 			}
 
 			for (auto it = _gateaddr.begin(); it != _gateaddr.end();){
@@ -153,6 +154,7 @@ void logic::run(){
 						addr.second = ch;
 						auto c = boost::make_shared<sync::routing>(_process, ch);
 						routing_map.insert(std::make_pair(ch, boost::make_tuple(addr.first.first, addr.first.second, i)));
+						routing_caller.insert(std::make_pair(ch, boost::make_shared<async::routing>(ch)));
 					}
 				}
 			}

@@ -7,8 +7,6 @@
 #ifndef _center_h
 #define _center_h
 
-#include <uuid/uuid.h>
-
 #include <string>
 #include <list>
 
@@ -41,13 +39,13 @@ public:
 	void run();
 
 public:
-	int register_logic(boost::shared_ptr<Fossilizid::juggle::channel> ch, std::string ip, int port);
+	int register_logic(std::string ip, int port);
 
-	int register_gate(boost::shared_ptr<Fossilizid::juggle::channel> ch, std::string ip, int port);
+	int register_gate(std::string ip, int port);
 
-	int register_routing(boost::shared_ptr<Fossilizid::juggle::channel> ch, std::string ip, int port);
+	int register_routing(std::string ip, int port);
 
-	int register_db(boost::shared_ptr<Fossilizid::juggle::channel> ch, std::string ip, int port);
+	int register_db(std::string ip, int port);
 
 public:
 	void cancle_center();
@@ -63,13 +61,13 @@ private:
 
 	int servernum;
 
-	boost::unordered_map<boost::shared_ptr<Fossilizid::juggle::channel>, std::pair<std::string, short> > gateaddrmap;
+	boost::unordered_map<boost::shared_ptr<Fossilizid::juggle::channel>, std::pair<int, std::pair<std::string, short> > > gateaddrmap;
 	boost::unordered_map<boost::shared_ptr<Fossilizid::juggle::channel>, boost::shared_ptr<sync::gate> > gatemap;
-	boost::unordered_map<boost::shared_ptr<Fossilizid::juggle::channel>, std::pair<std::string, short> > logicaddrmap;
+	boost::unordered_map<boost::shared_ptr<Fossilizid::juggle::channel>, std::pair<int, std::pair<std::string, short> > > logicaddrmap;
 	boost::unordered_map<boost::shared_ptr<Fossilizid::juggle::channel>, boost::shared_ptr<sync::logic> > logicmap;
-	boost::unordered_map<boost::shared_ptr<Fossilizid::juggle::channel>, std::pair<std::string, short> > routingaddrmap;
+	boost::unordered_map<boost::shared_ptr<Fossilizid::juggle::channel>, std::pair<int, std::pair<std::string, short> > > routingaddrmap;
 	boost::unordered_map<boost::shared_ptr<Fossilizid::juggle::channel>, boost::shared_ptr<sync::routing> > routingmap;
-	boost::unordered_map<boost::shared_ptr<Fossilizid::juggle::channel>, std::pair<std::string, short> > dbaddrmap;
+	boost::unordered_map<boost::shared_ptr<Fossilizid::juggle::channel>, std::pair<int, std::pair<std::string, short> > > dbaddrmap;
 	boost::unordered_map<boost::shared_ptr<Fossilizid::juggle::channel>, boost::shared_ptr<sync::dbproxy> > dbmap;
 
 	boost::shared_ptr<timer::timerservice> _timerservice;

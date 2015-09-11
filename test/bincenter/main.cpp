@@ -7,7 +7,9 @@
 #include "../../framework/center/center.h"
 
 int main(){
-	auto _center = Fossilizid::center::center("test.config", "center");
+	Fossilizid::center::center _center("test.config", "center");
+
+	_center.run();
 
 	return 0;
 }

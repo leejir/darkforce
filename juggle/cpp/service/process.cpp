@@ -61,6 +61,8 @@ void process::run(){
 	{
 		boost::mutex::scoped_lock lmu_channel(mu_channel);
 		for (auto ch : set_channel){
+			(boost::static_pointer_cast<juggleservice>(_service_handle))->set_current_channel(ch);
+
 			boost::shared_ptr<boost::unordered_map<std::string, boost::any> > cmd = ch->pop();
 			if (cmd == 0){
 				continue;
